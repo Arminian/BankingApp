@@ -10,12 +10,14 @@ public class BankInterface {
         System.out.println("\nBalance: " + balance);
         System.out.println("Select your option... \n");
         System.out.print(
-            "1 - Deposit: \n" +
-            "2 - Withdraw: \n" +
-            "3 - Add account: \n" +
-            "4 - View accounts: \n" +
-            "5 - Transfer: \n" +
-            "6 - Exit: \n");
+                """
+                        1 - Deposit:\s
+                        2 - Withdraw:\s
+                        3 - Add account:\s
+                        4 - View accounts:\s
+                        5 - Transfer:\s
+                        6 - Exit:\s
+                        """);
 
         for (int i = 0; i < menuSize; i++) {
             System.out.print("_");
