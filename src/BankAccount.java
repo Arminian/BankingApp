@@ -6,10 +6,6 @@ public class BankAccount {
     public int accountNumber;
 
     // Constructors
-    public BankAccount() {
-        this.balance = 0;
-        this.accountNumber = 16273;
-    }
     public BankAccount(double balance, int accountNumber) {
         this.balance = balance;
         this.accountNumber = accountNumber;
