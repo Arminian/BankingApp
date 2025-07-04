@@ -7,6 +7,12 @@ public class BankInterface {
             System.out.print("_");
         }
 
+        System.out.println("\nBanking App");
+
+        for (int i = 0; i < menuSize; i++) {
+            System.out.print("_");
+        }
+
         System.out.println("\nBalance: " + balance);
         System.out.println("Select your option... \n");
         System.out.print(
@@ -42,17 +48,31 @@ public class BankInterface {
         while (!exitComm) {
             userMenu(current.getBalance(), menuSize);
             int menuInput = (int)checkInput();
+            double sum;
 
             switch (menuInput) {
                 case 1:
-                    double sumDep = checkInput();
-                    current.setBalance(current.deposit(sumDep));
+                    System.out.print("Enter deposit amount: ");
+                    sum = checkInput();
+                    if (sum <= 0) {
+                        System.out.println("Cannot deposit! Input positive...");
+                        System.out.print("Enter deposit amount: ");
+                        sum = checkInput();
+                    }
+                    current.setBalance(current.deposit(sum));
                     break;
                 case 2:
-                    double sumWith = checkInput();
-                    current.setBalance(current.withdraw(sumWith));
+                    System.out.print("Enter withdraw amount: ");
+                    sum = checkInput();
+                    if (sum <= 0) {
+                        System.out.println("Cannot withdraw! Input positive...");
+                        System.out.print("Enter deposit amount: ");
+                        sum = checkInput();
+                    }
+                    current.setBalance(current.withdraw(sum));
                     break;
                 case 3:
+                    System.out.print("Enter account number: ");
                     int newNum = (int)checkInput();
                     try {
                         current.addAccount(accounts, newNum);
@@ -62,16 +82,20 @@ public class BankInterface {
                     }
                     break;
                 case 4:
+                    System.out.println("\nAvailable accounts: ");
                     current.displayAccounts(accounts);
                     Scanner sc = new Scanner(System.in);
                     sc.nextLine();
                     break;
                 case 5:
+                    System.out.print("Enter account number: ");
                     int accNum = (int)checkInput();
+                    System.out.print("Enter deposit amount: ");
                     double sumTran = checkInput();
                     current.transfer(accounts, accNum, sumTran);
                     break;
                 case 6:
+                    System.out.println("Goodbye!\n");
                     exitComm = true;
             }
         }

@@ -6,6 +6,6 @@ public class App {
         BankAccount personal = new BankAccount(38.49, 92512);
         accounts.add(personal);
 
-        BankInterface.menuLoop(accounts, personal, 12);
+        BankInterface.menuLoop(accounts, personal, 24);
     }
 }

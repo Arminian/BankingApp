@@ -47,17 +47,19 @@ public class BankAccount {
 
     public void displayAccounts(ArrayList<BankAccount> accounts) {
         for (int i = 0; i < accounts.size(); i++) {
-            System.out.println("\n" + i + ": " + accounts.get(i));
+            System.out.println(i + ": " + accounts.get(i));
         }
-        System.out.println("Press enter to go back...");
+        System.out.print("\nPress enter to go back...");
     }
 
     public void transfer(ArrayList<BankAccount> accounts, int input, double sum) {
-        this.balance = withdraw(sum);
-
         for (int i = 0; i < accounts.size(); i++) {
             if (i == input) {
+                this.balance = withdraw(sum);
                 accounts.get(i).deposit(sum);
+            } else {
+                System.out.println("No account number found!");
+                break;
             }
         }
     }
