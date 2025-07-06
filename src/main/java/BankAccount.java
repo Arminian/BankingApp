@@ -2,29 +2,37 @@ import java.util.ArrayList;
 
 public class BankAccount {
     // Attributes
-    private double balance;
+    private String fullName;
     public int accountNumber;
+    private double balance;
 
     // Constructors
-    public BankAccount(double balance, int accountNumber) {
-        this.balance = balance;
+    public BankAccount(String fullName, int accountNumber, double balance) {
+        this.fullName = fullName;
         this.accountNumber = accountNumber;
+        this.balance = balance;
     }
 
     // Getters
-    public double getBalance() {
-        return balance;
+    public String getFullName() {
+        return fullName;
     }
     public int getAccountNumber() {
         return accountNumber;
     }
+    public double getBalance() {
+        return balance;
+    }
 
     // Setters
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
     public void setAccountNumber(int accountNumber) {
         this.accountNumber = accountNumber;
+    }
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     // Methods
@@ -40,14 +48,14 @@ public class BankAccount {
         return balance;
     }
 
-    public void addAccount(ArrayList<BankAccount> accounts, int accountNumber) {
-        BankAccount newAcc = new BankAccount(0, accountNumber);
+    public void addAccount(ArrayList<BankAccount> accounts, String fullName, int accountNumber, double balance) {
+        BankAccount newAcc = new BankAccount(fullName, accountNumber, balance);
         accounts.add(newAcc);
     }
 
     public void displayAccounts(ArrayList<BankAccount> accounts) {
         for (int i = 0; i < accounts.size(); i++) {
-            System.out.println(i + ": " + accounts.get(i));
+            System.out.println(i + ": " + accounts.get(i).fullName + " | account - " + accounts.get(i).accountNumber);
         }
         System.out.print("\nPress enter to go back...");
     }

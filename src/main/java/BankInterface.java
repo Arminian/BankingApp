@@ -54,6 +54,7 @@ public class BankInterface {
         boolean exitComm = false;
 
         while (!exitComm) {
+            Scanner sc = new Scanner(System.in);
             userMenu(current.getBalance(), menuSize);
             int menuInput = (int)checkInput();
             double sum;
@@ -65,28 +66,36 @@ public class BankInterface {
                     inputErrorHandler(sum);
                     current.setBalance(current.deposit(sum));
                     break;
+
                 case 2:
                     System.out.print("Enter withdraw amount: ");
                     sum = checkInput();
                     inputErrorHandler(sum);
                     current.setBalance(current.withdraw(sum));
                     break;
+
                 case 3:
+                    System.out.print("Enter full name: ");
+                    String nameInput = sc.nextLine();
+
                     System.out.print("Enter account number: ");
                     int newNum = (int)checkInput();
+
                     try {
-                        current.addAccount(accounts, newNum);
+                        current.addAccount(accounts, nameInput, newNum, 0);
+                        BankDbHandler.setAccount(nameInput, newNum, 0);
                     }
                     catch (Exception ignored) {
                         System.out.println("Error on adding account!");
                     }
                     break;
+
                 case 4:
                     System.out.println("\nAvailable accounts: ");
                     current.displayAccounts(accounts);
-                    Scanner sc = new Scanner(System.in);
                     sc.nextLine();
                     break;
+
                 case 5:
                     System.out.print("Enter account number: ");
                     int accNum = (int)checkInput();
@@ -95,6 +104,7 @@ public class BankInterface {
                     inputErrorHandler(sum);
                     current.transfer(accounts, accNum, sum);
                     break;
+
                 case 6:
                     System.out.println("Goodbye!\n");
                     exitComm = true;
