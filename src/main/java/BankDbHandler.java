@@ -1,8 +1,9 @@
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class BankDbHandler {
-    public static void setAccount(String fullName, int accountNum, double balance) {
+    public static void setAccount(String fullName, int accountNum, BigDecimal balance) {
         String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
 
         try {
@@ -22,7 +23,7 @@ public class BankDbHandler {
             PreparedStatement preparedStatement = conn.prepareStatement(insertQuery);
             preparedStatement.setString(1, fullName);
             preparedStatement.setInt(2, accountNum);
-            preparedStatement.setDouble(3, balance);
+            preparedStatement.setBigDecimal(3, balance);
             preparedStatement.executeUpdate();
 
             preparedStatement.close();
@@ -44,7 +45,7 @@ public class BankDbHandler {
 
             while (rs.next()) {
                 BankAccount newAcc = new BankAccount(rs.getString("full_name"),
-                        rs.getInt("account_number"), rs.getDouble("balance"));
+                        rs.getInt("account_number"), rs.getBigDecimal("balance"));
                 accounts.add(newAcc);
             }
 

@@ -1,13 +1,14 @@
 import java.util.ArrayList;
+import java.math.BigDecimal;
 
 public class BankAccount {
     // Attributes
     private String fullName;
-    public int accountNumber;
-    private double balance;
+    private int accountNumber;
+    private BigDecimal balance;
 
     // Constructors
-    public BankAccount(String fullName, int accountNumber, double balance) {
+    public BankAccount(String fullName, int accountNumber, BigDecimal balance) {
         this.fullName = fullName;
         this.accountNumber = accountNumber;
         this.balance = balance;
@@ -20,7 +21,7 @@ public class BankAccount {
     public int getAccountNumber() {
         return accountNumber;
     }
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
@@ -31,24 +32,24 @@ public class BankAccount {
     public void setAccountNumber(int accountNumber) {
         this.accountNumber = accountNumber;
     }
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
     // Methods
-    public double deposit(double amount) {
-        balance += amount;
+    public BigDecimal deposit(BigDecimal amount) {
+        balance = balance.add(amount);
 
         return balance;
     }
 
-    public double withdraw(double amount) {
-        balance -= amount;
+    public BigDecimal withdraw(BigDecimal amount) {
+        balance = balance.subtract(amount);
 
         return balance;
     }
 
-    public void addAccount(ArrayList<BankAccount> accounts, String fullName, int accountNumber, double balance) {
+    public void addAccount(ArrayList<BankAccount> accounts, String fullName, int accountNumber, BigDecimal balance) {
         BankAccount newAcc = new BankAccount(fullName, accountNumber, balance);
         accounts.add(newAcc);
     }
@@ -60,7 +61,7 @@ public class BankAccount {
         System.out.print("\nPress enter to go back...");
     }
 
-    public void transfer(ArrayList<BankAccount> accounts, int input, double sum) {
+    public void transfer(ArrayList<BankAccount> accounts, int input, BigDecimal sum) {
         for (int i = 0; i < accounts.size(); i++) {
             if (i == input) {
                 this.balance = withdraw(sum);
