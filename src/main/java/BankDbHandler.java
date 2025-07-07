@@ -33,7 +33,7 @@ public class BankDbHandler {
         }
     }
 
-    public static void getAccounts(ArrayList<BankAccount> accounts) {
+public static void getAccounts(ArrayList<BankAccount> accounts) {
         String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
 
         try {
@@ -55,7 +55,7 @@ public class BankDbHandler {
         }
     }
 
-    public static void getAll() {
+public static void getAll() {
         String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
 
         try {
