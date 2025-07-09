@@ -3,77 +3,168 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class BankDbHandler {
-    public static void setAccount(String fullName, int accountNum, BigDecimal balance) {
-        String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
+    private static final String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
 
-        try {
-            Connection conn = DriverManager.getConnection(jdbcUrl);
+    public static void setAccount(String accountID, String login, String password, BigDecimal balance) {
+        try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
 
             String table = "CREATE TABLE IF NOT EXISTS accounts ("
-                                + "id INTEGER PRIMARY KEY,"
-                                + "full_name text NOT NULL,"
-                                + "account_number INTEGER,"
-                                + "balance DOUBLE"
-                                + ");";
+                    + "account_ID text PRIMARY KEY,"
+                    + "login text NOT NULL UNIQUE,"
+                    + "password text NOT NULL,"
+                    + "balance DOUBLE"
+                    + ");";
 
             var stat = conn.createStatement();
             stat.execute(table);
 
-            String insertQuery = "INSERT INTO accounts (full_name, account_number, balance) VALUES (?, ?, ?)";
+            String insertQuery = "INSERT INTO accounts (account_ID, login, password, balance) VALUES (?, ?, ?, ?);";
             PreparedStatement preparedStatement = conn.prepareStatement(insertQuery);
-            preparedStatement.setString(1, fullName);
-            preparedStatement.setInt(2, accountNum);
-            preparedStatement.setBigDecimal(3, balance);
+            preparedStatement.setString(1, accountID);
+            preparedStatement.setString(2, login);
+            preparedStatement.setString(3, password);
+            preparedStatement.setBigDecimal(4, balance);
             preparedStatement.executeUpdate();
 
             preparedStatement.close();
-            conn.close();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
     }
 
-public static void getAccounts(ArrayList<BankAccount> accounts) {
-        String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
+    public static BankAccount logIn(String login, String pass) {
+        try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
 
-        try {
-            System.out.println("tried to get import from db");
-            Connection conn = DriverManager.getConnection(jdbcUrl);
+            String selectQuery = "SELECT * FROM accounts WHERE login = ? AND password = ?;";
+            PreparedStatement preparedStatement = conn.prepareStatement(selectQuery);
+            preparedStatement.setString(1, login);
+            preparedStatement.setString(2, pass);
+            ResultSet rs = preparedStatement.executeQuery();
 
-            var stat = conn.createStatement();
-            ResultSet rs = stat.executeQuery( "SELECT * FROM accounts;" );
-
-            while (rs.next()) {
-                BankAccount newAcc = new BankAccount(rs.getString("full_name"),
-                        rs.getInt("account_number"), rs.getBigDecimal("balance"));
-                accounts.add(newAcc);
-            }
+            BankAccount account = new BankAccount(rs.getString("account_ID"), rs.getString("login"),
+                    rs.getString("password"), rs.getBigDecimal("balance"));
 
             conn.close();
+            return account;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static BankAccount getAccount(String accountID) {
+        try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
+            String selectQuery ="SELECT * FROM accounts WHERE account_ID = ?;";
+            PreparedStatement preparedStatement = conn.prepareStatement(selectQuery);
+            preparedStatement.setString(1, accountID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            BankAccount account = new BankAccount(rs.getString("account_ID"), rs.getString("login"),
+                    rs.getString("password"), rs.getBigDecimal("balance"));
+
+            conn.close();
+            return account;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return null;
         }
     }
 
-public static void getAll() {
-        String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
+    public static ArrayList<String> getAccountList() {
+        ArrayList<String> accounts = new ArrayList<>();
 
-        try {
-            Connection conn = DriverManager.getConnection(jdbcUrl);
+        try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
 
             var stat = conn.createStatement();
-            ResultSet rs = stat.executeQuery("SELECT * FROM accounts;");
+            ResultSet rs = stat.executeQuery( "SELECT account_ID FROM accounts;" );
+
             while (rs.next()) {
-                System.out.println("------------------------------------");
-                System.out.println("name: " + rs.getString("full_name"));
-                System.out.println("number: " + rs.getInt("account_number"));
-                System.out.println("balance: " + rs.getDouble("balance"));
+                accounts.add(rs.getString("account_ID"));
             }
-            rs.close();
 
             conn.close();
+            return accounts;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            return null;
         }
+    }
+
+    public static void displayAccountList() {
+        ArrayList<String> accList = getAccountList();
+
+        for (int i = 0; i < accList.size(); i++) {
+            System.out.println(i + ": " + accList.get(i));
+        }
+    }
+
+    public static void updateBalance(BigDecimal amount, String accountID) {
+        String updateQuery = "UPDATE accounts SET balance = ? WHERE account_ID = ?;";
+
+        try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
+
+            PreparedStatement preparedStatement = conn.prepareStatement(updateQuery);
+            preparedStatement.setBigDecimal(1, amount);
+            preparedStatement.setString(2, accountID);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void deleteAccount(String accountID) {
+        String deleteQuery = "DELETE FROM accounts WHERE account_ID = ?;";
+
+        try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
+
+            PreparedStatement preparedStatement = conn.prepareStatement(deleteQuery);
+            preparedStatement.setString(1, accountID);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void updatePassword(String oldPass, String newPass) {
+        String updateQuery = "UPDATE accounts SET password = ? WHERE password = ?;";
+
+        try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
+            PreparedStatement preparedStatement = conn.prepareStatement(updateQuery);
+            preparedStatement.setString(1, newPass);
+            preparedStatement.setString(2, oldPass);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static BigDecimal deposit(BigDecimal amount, BankAccount acc) {
+        acc.balance = acc.balance.add(amount);
+        updateBalance(acc.balance, acc.accountID);
+
+        return amount;
+    }
+
+    public static BigDecimal withdraw(BigDecimal amount, BankAccount acc) {
+        acc.balance = acc.balance.subtract(amount);
+        updateBalance(acc.balance, acc.accountID);
+
+        return amount;
+    }
+
+    public static BigDecimal transfer(BigDecimal amount, BankAccount sender, String receiverID) {
+        BankAccount receiver = getAccount(receiverID);
+
+        withdraw(amount, sender);
+        assert receiver != null;
+        deposit(amount, receiver);
+
+        return amount;
     }
 }

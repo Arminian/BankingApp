@@ -1,14 +1,15 @@
-import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class BankInterface {
-    public static void userMenu(BigDecimal balance, int menuSize) {
+    private static void userMenu(BigDecimal balance, int menuSize) {
         for (int i = 0; i < menuSize; i++) {
             System.out.print("_");
         }
 
-        System.out.println("\nBanking App");
+        System.out.println("\n\tBanking App");
 
         for (int i = 0; i < menuSize; i++) {
             System.out.print("_");
@@ -20,10 +21,12 @@ public class BankInterface {
                 """
                         1 - Deposit:\s
                         2 - Withdraw:\s
-                        3 - Add account:\s
-                        4 - View accounts:\s
-                        5 - Transfer:\s
-                        6 - Exit:\s
+                        3 - View accounts:\s
+                        4 - Add account:\s
+                        5 - Delete account:\s
+                        6 - Change password:\s
+                        7 - Transfer:\s
+                        8 - Exit:\s
                         """);
 
         for (int i = 0; i < menuSize; i++) {
@@ -32,7 +35,13 @@ public class BankInterface {
         System.out.print("\nEnter: ");
     }
 
-    public static BigDecimal parseDecimalInput() {
+    private static void menuPause() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("\nPress enter to continue...");
+        sc.nextLine();
+    }
+
+    private static BigDecimal parseDecimalInput() {
         Scanner sc = new Scanner(System.in);
         String userInput = sc.nextLine();
         try {
@@ -43,7 +52,7 @@ public class BankInterface {
         return BigDecimal.ZERO;
     }
 
-    public static int parseIntInput() {
+    private static int parseIntInput() {
         Scanner sc = new Scanner(System.in);
         String userInput = sc.nextLine();
         try {
@@ -54,73 +63,130 @@ public class BankInterface {
         return 0;
     }
 
-    public static void inputErrorHandler(BigDecimal sum) {
+    private static void inputErrorHandler(BigDecimal sum) {
         int inputValue = sum.compareTo(BigDecimal.ZERO);
         if (inputValue != 1) {
             System.out.println("Cannot withdraw! Input positive...");
-            System.out.print("Enter deposit amount: ");
+            System.out.print("Enter amount: ");
         }
     }
 
-    public static void menuLoop(ArrayList<BankAccount> accounts, BankAccount current, int menuSize) {
-        boolean exitComm = false;
+    public static void menuLoop(int menuSize) {
+        boolean exitMenu;
 
-        while (!exitComm) {
+        while (true) {
             Scanner sc = new Scanner(System.in);
-            userMenu(current.getBalance(), menuSize);
-            int menuInput = parseIntInput();
-            BigDecimal sum;
+            System.out.print("'qt' to quit or enter to continue: ");
+            String userInput = sc.nextLine();
+            if (Objects.equals(userInput, "qt")) {
+                break;
+            }
 
-            switch (menuInput) {
-                case 1:
-                    System.out.print("Enter deposit amount: ");
-                    sum = parseDecimalInput();
-                    inputErrorHandler(sum);
-                    current.setBalance(current.deposit(sum));
-                    break;
+            System.out.print("Enter username: ");
+            String login = sc.nextLine();
+            System.out.print("Enter password: ");
+            String password = sc.nextLine();
+            BankAccount account = BankDbHandler.logIn(login, password);
 
-                case 2:
-                    System.out.print("Enter withdraw amount: ");
-                    sum = parseDecimalInput();
-                    inputErrorHandler(sum);
-                    current.setBalance(current.withdraw(sum));
-                    break;
+            if (account != null && BankAccount.compare(account.getLogin(), login) && BankAccount.compare(account.getPassword(), password)) {
+                System.out.println("Successful login");
+                exitMenu = false;
+            } else {
+                System.out.println("Wrong credentials, try again!");
+                exitMenu = true;
+            }
 
-                case 3:
-                    System.out.print("Enter full name: ");
-                    String nameInput = sc.nextLine();
+            while (!exitMenu) {
+                userMenu(account.getBalance(), menuSize);
+                int menuInput = parseIntInput();
+                BigDecimal sum;
 
-                    System.out.print("Enter account number: ");
-                    int newNum = parseIntInput();
+                switch (menuInput) {
+                    case 1:
+                        System.out.print("Enter deposit sum: ");
+                        sum = parseDecimalInput();
+                        inputErrorHandler(sum);
+                        BankDbHandler.deposit(sum, account);
+                        break;
 
-                    try {
-                        current.addAccount(accounts, nameInput, newNum, BigDecimal.ZERO);
-                        BankDbHandler.setAccount(nameInput, newNum, BigDecimal.ZERO);
-                    }
-                    catch (Exception ignored) {
-                        System.out.println("Error on adding account!");
-                    }
-                    break;
+                    case 2:
+                        System.out.print("Enter withdraw sum: ");
+                        sum = parseDecimalInput();
+                        inputErrorHandler(sum);
+                        BankDbHandler.withdraw(sum, account);
+                        break;
 
-                case 4:
-                    System.out.println("\nAvailable accounts: ");
-                    current.displayAccounts(accounts);
-                    sc.nextLine();
-                    break;
+                    case 3:
+                        System.out.println("\nAvailable accounts: ");
+                        BankDbHandler.displayAccountList();
+                        menuPause();
+                        break;
 
-                case 5:
-                    System.out.print("Enter account number: ");
-                    int accNum = parseIntInput();
-                    System.out.print("Enter deposit amount: ");
-                    sum = parseDecimalInput();
-                    inputErrorHandler(sum);
-                    current.transfer(accounts, accNum, sum);
-                    break;
+                    case 4:
+                        System.out.print("Enter login: ");
+                        String loginInput = sc.nextLine();
 
-                case 6:
-                    System.out.println("Goodbye!\n");
-                    exitComm = true;
-                    break;
+                        System.out.print("Enter password: ");
+                        String passwordInput = sc.nextLine();
+
+                        String newID = UUID.randomUUID().toString();
+
+                        BankDbHandler.setAccount(newID, loginInput, passwordInput, BigDecimal.ZERO);
+                        break;
+
+                    case 5:
+                        System.out.print("Enter password to delete this account: ");
+                        String deleteInput = sc.nextLine();
+                        BankAccount forDeletion = BankDbHandler.getAccount(deleteInput);
+                        if (forDeletion != null && BankAccount.compare(forDeletion.getPassword(), deleteInput)) {
+                            BankDbHandler.deleteAccount(account.getAccountID());
+                            System.out.println("Please login again.");
+
+                            menuPause();
+                            exitMenu = true;
+                        } else {
+                            System.out.println("Wrong password!");
+                        }
+                        break;
+
+                    case 6:
+                        System.out.print("Enter current password: ");
+                        String oldPass = sc.nextLine();
+                        if
+                        (BankAccount.compare(account.getPassword(), oldPass)) {
+                            System.out.print("Enter new password: ");
+                            String newPass = sc.nextLine();
+                            BankDbHandler.updatePassword(oldPass, newPass);
+                        } else {
+                            System.out.println("Wrong password!");
+                        }
+                        break;
+
+                    case 7:
+                        System.out.print("Enter recipient ID: ");
+                        String recip = sc.nextLine();
+                        BankAccount recipAcc = BankDbHandler.getAccount(recip);
+
+                        if (recipAcc != null && !Objects.equals(recipAcc.getAccountID(), account.getAccountID())) {
+                            System.out.print("Enter transfer sum: ");
+                            sum = parseDecimalInput();
+                            inputErrorHandler(sum);
+                            BankDbHandler.transfer(sum, account, recip);
+                        } else {
+                            System.out.println("No recipient account found");
+                        }
+                        break;
+
+                    case 8:
+                        System.out.println("Goodbye!\n");
+                        exitMenu = true;
+                        break;
+
+                    default:
+                        System.out.println("Try again!");
+                        menuPause();
+                        break;
+                }
             }
         }
         System.exit(0);

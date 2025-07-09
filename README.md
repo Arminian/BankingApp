@@ -16,8 +16,7 @@ This is a simple banking application written in Java to present study progress o
 
 ## TO DO:
 - Replace ArrayList with HashMap
-- Integrate Swing for front-end
 - Implement operation constraints
 - Integrate JUnit tests
-- Implement a login system
+- ~~Implement a login system~~
 - Separate User from Bank accounts (optional)
