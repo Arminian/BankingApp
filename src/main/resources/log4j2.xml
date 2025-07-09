@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <!-- Define the Appender -->
+    <Appenders>
+        <File name="LOGFILE" fileName="logs/log4j.log">
+            <!-- Define the layout for the appender -->
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
+            <!-- Define the filter for the appender -->
+            <ThresholdFilter level="info"/>
+        </File>
+    </Appenders>
+
+    <!-- Define the Loggers -->
+    <Loggers>
+        <!-- Root Logger -->
+        <Root level="info">
+            <AppenderRef ref="LOGFILE"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -1,9 +1,12 @@
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class BankDbHandler {
     private static final String jdbcUrl = "jdbc:sqlite:src/main/resources/accounts.db";
+    private static final Logger logger = LogManager.getLogger(BankDbHandler.class);
 
     public static void setAccount(String accountID, String login, String password, BigDecimal balance) {
         try (Connection conn = DriverManager.getConnection(jdbcUrl)) {
@@ -27,8 +30,10 @@ public class BankDbHandler {
             preparedStatement.executeUpdate();
 
             preparedStatement.close();
+            logger.info("account was created successfully");
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            logger.error("Account creation error: {}", e.getMessage());
         }
     }
 
@@ -45,9 +50,11 @@ public class BankDbHandler {
                     rs.getString("password"), rs.getBigDecimal("balance"));
 
             conn.close();
+            logger.info("Successfully logged in");
             return account;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            logger.error("log in error: {}", e.getMessage());
         }
         return null;
     }
@@ -63,9 +70,11 @@ public class BankDbHandler {
                     rs.getString("password"), rs.getBigDecimal("balance"));
 
             conn.close();
+            logger.info("Account retrieved successfully");
             return account;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            logger.error("Account retrieval error: {}", e.getMessage());
             return null;
         }
     }
@@ -83,9 +92,11 @@ public class BankDbHandler {
             }
 
             conn.close();
+            logger.info("All accounts retrieved successfully");
             return accounts;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            logger.error("Accounts list retrieval error: {}", e.getMessage());
             return null;
         }
     }
@@ -109,8 +120,10 @@ public class BankDbHandler {
             preparedStatement.executeUpdate();
 
             preparedStatement.close();
+            logger.info("Balance updated successfully");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            logger.error("Balance update error: {}", e.getMessage());
         }
     }
 
@@ -124,8 +137,10 @@ public class BankDbHandler {
             preparedStatement.executeUpdate();
 
             preparedStatement.close();
+            logger.info("Account deleted successfully");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            logger.error("Account deletion error: {}", e.getMessage());
         }
     }
 
@@ -139,32 +154,28 @@ public class BankDbHandler {
             preparedStatement.executeUpdate();
 
             preparedStatement.close();
+            logger.info("Password updated successfully");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            logger.error("Password update error: {}", e.getMessage());
         }
     }
 
-    public static BigDecimal deposit(BigDecimal amount, BankAccount acc) {
+    public static void deposit(BigDecimal amount, BankAccount acc) {
         acc.balance = acc.balance.add(amount);
         updateBalance(acc.balance, acc.accountID);
-
-        return amount;
     }
 
-    public static BigDecimal withdraw(BigDecimal amount, BankAccount acc) {
+    public static void withdraw(BigDecimal amount, BankAccount acc) {
         acc.balance = acc.balance.subtract(amount);
         updateBalance(acc.balance, acc.accountID);
-
-        return amount;
     }
 
-    public static BigDecimal transfer(BigDecimal amount, BankAccount sender, String receiverID) {
+    public static void transfer(BigDecimal amount, BankAccount sender, String receiverID) {
         BankAccount receiver = getAccount(receiverID);
 
         withdraw(amount, sender);
         assert receiver != null;
         deposit(amount, receiver);
-
-        return amount;
     }
 }

@@ -2,8 +2,12 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.math.BigDecimal;
 import java.util.UUID;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class BankInterface {
+    private static final Logger logger = LogManager.getLogger(BankInterface.class);
+
     private static void userMenu(BigDecimal balance, int menuSize) {
         for (int i = 0; i < menuSize; i++) {
             System.out.print("_");
@@ -48,6 +52,7 @@ public class BankInterface {
             return BigDecimal.valueOf(Long.parseLong(userInput));
         } catch (Exception ignored) {
             System.out.printf("%s is not a number!%n", userInput);
+            logger.error("Non-numerical decimal user input error");
         }
         return BigDecimal.ZERO;
     }
@@ -59,6 +64,7 @@ public class BankInterface {
             return Integer.parseInt(userInput);
         } catch (Exception ignored) {
             System.out.printf("%s is not a number!%n", userInput);
+            logger.error("Non-numerical integer user input error");
         }
         return 0;
     }
@@ -66,8 +72,9 @@ public class BankInterface {
     private static void inputErrorHandler(BigDecimal sum) {
         int inputValue = sum.compareTo(BigDecimal.ZERO);
         if (inputValue != 1) {
-            System.out.println("Cannot withdraw! Input positive...");
+            System.out.println("Cannot complete operation! Input positive amount...");
             System.out.print("Enter amount: ");
+            logger.error("Negative or zero user input error");
         }
     }
 
@@ -91,9 +98,11 @@ public class BankInterface {
             if (account != null && BankAccount.compare(account.getLogin(), login) && BankAccount.compare(account.getPassword(), password)) {
                 System.out.println("Successful login");
                 exitMenu = false;
+                logger.info("Logged in to account: {} AND ID: {}", login, account.getAccountID());
             } else {
                 System.out.println("Wrong credentials, try again!");
                 exitMenu = true;
+                logger.error("Failed to login to account by username: {}", login);
             }
 
             while (!exitMenu) {
@@ -107,6 +116,8 @@ public class BankInterface {
                         sum = parseDecimalInput();
                         inputErrorHandler(sum);
                         BankDbHandler.deposit(sum, account);
+
+                        logger.info("Deposited sum to account: {}", sum);
                         break;
 
                     case 2:
@@ -114,12 +125,16 @@ public class BankInterface {
                         sum = parseDecimalInput();
                         inputErrorHandler(sum);
                         BankDbHandler.withdraw(sum, account);
+
+                        logger.info("Withdrawn sum from account: {}", sum);
                         break;
 
                     case 3:
                         System.out.println("\nAvailable accounts: ");
                         BankDbHandler.displayAccountList();
                         menuPause();
+
+                        logger.info("Accounts were listed to user");
                         break;
 
                     case 4:
@@ -132,6 +147,8 @@ public class BankInterface {
                         String newID = UUID.randomUUID().toString();
 
                         BankDbHandler.setAccount(newID, loginInput, passwordInput, BigDecimal.ZERO);
+
+                        logger.info("Account was created by name: {} AND ID: {}", login, newID);
                         break;
 
                     case 5:
@@ -144,9 +161,12 @@ public class BankInterface {
 
                             menuPause();
                             exitMenu = true;
+                            logger.info("Account was deleted by ID: {}", forDeletion);
                         } else {
                             System.out.println("Wrong password!");
+                            logger.error("Wrong password before deletion error");
                         }
+
                         break;
 
                     case 6:
@@ -157,9 +177,12 @@ public class BankInterface {
                             System.out.print("Enter new password: ");
                             String newPass = sc.nextLine();
                             BankDbHandler.updatePassword(oldPass, newPass);
+                            logger.info("Account {} updated password to: {}", account, newPass);
                         } else {
                             System.out.println("Wrong password!");
+                            logger.error("Wrong old password error");
                         }
+
                         break;
 
                     case 7:
@@ -172,19 +195,25 @@ public class BankInterface {
                             sum = parseDecimalInput();
                             inputErrorHandler(sum);
                             BankDbHandler.transfer(sum, account, recip);
+                            logger.info("Transferred sum from {} to {} in amount: {}", account, recipAcc, sum);
                         } else {
                             System.out.println("No recipient account found");
+                            logger.error("No recipient error");
                         }
+
                         break;
 
                     case 8:
                         System.out.println("Goodbye!\n");
                         exitMenu = true;
+
                         break;
 
                     default:
                         System.out.println("Try again!");
                         menuPause();
+
+                        logger.info("Wrong menu input");
                         break;
                 }
             }

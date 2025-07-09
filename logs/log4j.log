@@ -1,0 +1,18 @@
+[INFO ] 2025-07-10 01:25:34.891 [main] App - Application started
+[INFO ] 2025-07-10 01:25:47.472 [main] BankDbHandler - Successfully logged in
+[INFO ] 2025-07-10 01:25:47.473 [main] BankInterface - Logged in to account: admin AND ID: b43646c5-d85a-4544-8739-b01001cb134d
+[INFO ] 2025-07-10 01:25:56.886 [main] BankDbHandler - Balance updated successfully
+[INFO ] 2025-07-10 01:25:56.886 [main] BankInterface - Withdrawn sum from account: 12
+[INFO ] 2025-07-10 01:26:01.823 [main] BankDbHandler - All accounts retrieved successfully
+[INFO ] 2025-07-10 01:26:03.832 [main] BankInterface - Accounts were listed to user
+[INFO ] 2025-07-10 01:26:12.309 [main] BankDbHandler - account was created successfully
+[INFO ] 2025-07-10 01:26:12.309 [main] BankInterface - Account was created by name: admin AND ID: db76af90-8674-4dd2-8699-8b797a0d6d40
+[INFO ] 2025-07-10 01:26:15.053 [main] BankDbHandler - All accounts retrieved successfully
+[INFO ] 2025-07-10 01:26:18.076 [main] BankInterface - Accounts were listed to user
+[INFO ] 2025-07-10 01:26:32.281 [main] BankDbHandler - Account retrieved successfully
+[INFO ] 2025-07-10 01:26:36.381 [main] BankDbHandler - Account retrieved successfully
+[INFO ] 2025-07-10 01:26:36.400 [main] BankDbHandler - Balance updated successfully
+[INFO ] 2025-07-10 01:26:36.406 [main] BankDbHandler - Balance updated successfully
+[INFO ] 2025-07-10 01:26:36.406 [main] BankInterface - Transferred sum from BankAccount@611889f4 to BankAccount@1da2cb77 in amount: 10
+[INFO ] 2025-07-10 01:26:48.653 [main] BankDbHandler - Successfully logged in
+[INFO ] 2025-07-10 01:26:48.653 [main] BankInterface - Logged in to account: kiki AND ID: db76af90-8674-4dd2-8699-8b797a0d6d40

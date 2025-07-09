@@ -8,15 +8,18 @@ This is a simple banking application written in Java to present study progress o
 
 ## Features: 
 
-- Adding and showing bank accounts
+- Creating bank accounts
+- Viewing Available bank account IDs
 - Withdrawing money
 - Depositing money
 - Transferring money to another account
+- Deleting the current account
+- Changing the password
 - BigDecimal for accurate operations with float.
 
 ## TO DO:
 - Replace ArrayList with HashMap
-- Implement operation constraints
+- ~~Implement operation constraints~~
 - Integrate JUnit tests
 - ~~Implement a login system~~
 - Separate User from Bank accounts (optional)
